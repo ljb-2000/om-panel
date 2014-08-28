@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <title>{% block title %}om panel{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+
+  <body>
+    <div class="page">
+      <h1>om panel</h1>
+
+      <div class="navigation">
+      {% if g.user %}
+        <p>navigation logged in</p>
+      {% else %}
+        <a href="{{ url_for('login') }}">sign in</a>
+      {% endif %}
+      </div>
+
+      {% with flashes = get_flashed_messages() %}
+        {% if flashes %}
+          <ul class="flashes">
+          {% for message in flashes %}
+            <li>{{ message }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+
+      <div class="body">
+      {% block body %}{% endblock %}
+      </div>
+
+    </div>
+  </body>
+</html>
