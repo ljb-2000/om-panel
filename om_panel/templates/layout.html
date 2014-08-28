@@ -5,31 +5,34 @@
   </head>
 
   <body>
-    <div class="page">
-      <h1>om panel</h1>
+    <div class="container">
+      <div class='header'>
+        <div class='left'>
+          <b>om panel</b>
+        </div>
 
-      <div class="navigation">
-      {% if g.user %}
-        <p>navigation logged in</p>
-      {% else %}
-        <a href="{{ url_for('login') }}">sign in</a>
-      {% endif %}
+        <div class="right">
+          <a href="{{ url_for('login') }}">sign in</a>
+        </div>
+
+        <div class='clear'></div>
       </div>
 
-      {% with flashes = get_flashed_messages() %}
-        {% if flashes %}
-          <ul class="flashes">
-          {% for message in flashes %}
-            <li>{{ message }}</li>
-          {% endfor %}
-          </ul>
-        {% endif %}
-      {% endwith %}
+      <div class="content">
+        <div class='flashes'>
+          {% with flashes = get_flashed_messages() %}
+            {% if flashes %}
+              <ul class="flashes">
+              {% for message in flashes %}
+                <li>{{ message }}</li>
+              {% endfor %}
+              </ul>
+            {% endif %}
+          {% endwith %}
+        </div>
 
-      <div class="body">
-      {% block body %}{% endblock %}
+        {% block body %}{% endblock %}
       </div>
-
     </div>
   </body>
 </html>

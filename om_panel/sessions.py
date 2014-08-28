@@ -19,5 +19,5 @@ def sessions(app):
                 g.user = 1
                 return redirect(url_for('home'))
             else:
-                error = 'Wrong credentials'
+                error = 'wrong credentials'
         return render_template('login.html', error=error)
