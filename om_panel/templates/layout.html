@@ -8,11 +8,22 @@
     <div class="container">
       <div class='header'>
         <div class='left'>
-          <b>om panel</b>
+          <img src='/static/images/logo.png' class='logo'/>
+          <b>panel</b>
+
+          <ul class='navbar'>
+              <li {% if request.path == '/hosts' %}class='selected'{% endif %}><a {% if request.path != '/hosts' %}href="{{ url_for('hosts') }}"{% endif %}>my hosts</a></li>
+          </ul>
         </div>
 
         <div class="right">
-          <a href="{{ url_for('login') }}">sign in</a>
+          <ul class='menu'>
+          {% if session.logged_in %}
+            <li><a href="{{ url_for('logout') }}">sign out</a></li>
+          {% else %}
+            <li><a href="{{ url_for('login') }}">sign in</a></li>
+          {% endif %}
+          </ul>
         </div>
 
         <div class='clear'></div>

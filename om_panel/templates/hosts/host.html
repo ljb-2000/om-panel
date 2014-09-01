@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<h2>host {{ host.name }}</h2>
+
+<table>
+  <tr>
+    <th>Host:</th>
+    <td>{{ host.host }}</td>
+  </tr>
+</table>
+
+<a href="{{ url_for('destroy_host', host_id=host.name) }}">delete</a>
+{% endblock %}

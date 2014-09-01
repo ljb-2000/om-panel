@@ -1,6 +1,16 @@
 html {
 }
 
+
+a {
+  color: dodgerblue;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 .clear { clear:both; }
 
 .left {
@@ -9,17 +19,11 @@ html {
 
 .right {
   position: absolute;
-  right: 5px;
-  top: 5px;
+  vertical-align: middle;
+  right: 0px;
+  bottom: 0px;
   display: inline-block;
   float: right;
-}
-
-.header {
-  border-bottom: 1px solid #ccc;
-  vertical-align: middle;
-  padding: 5px;
-  position: relative;
 }
 
 .container {
@@ -34,3 +38,66 @@ html {
 .alert.error {
   color: red;
 }
+
+/* header */
+
+.header {
+  border-bottom: 1px solid #ccc;
+  vertical-align: middle;
+  padding: 5px;
+  position: relative;
+}
+
+.header .navbar {
+  list-style: none;
+  margin: 0;
+  display: inline-block;
+}
+
+.header .navbar li {
+  height: 25px;
+}
+
+.header .navbar li a {
+  margin: 0;
+  font-weight: bold;
+  color: #000;
+  text-transform: uppercase;
+  text-decoration: none;
+  height: 25px;
+  padding-bottom: 8px;
+  -webkit-transition: all .25s;
+  -moz-transition: all .25s;
+  -o-transition: all .25s;
+  transition: all .25s;
+  border-bottom: 0px solid #666699;
+}
+
+.header .navbar li.selected a, .header .navbar li:hover a {
+  border-bottom-width: 4px;
+}
+
+.header .menu {
+  list-style: none;
+  margin: 0;
+  dispay: inline-block;
+}
+
+.header .menu li {
+  margin: 0;
+  height: 25px;
+  padding-bottom: 8px;
+}
+
+.logo {
+  width: 50px;
+}
+
+/* login */
+
+.login {
+  margin: 35px 0px;
+}
+
+/* hosts */
+

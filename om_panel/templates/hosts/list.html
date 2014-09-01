@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<h2>hosts</h2>
+
+<a href="{{ url_for('host_new') }}">add host</a>
+
+<div class='hosts'>
+  {% for host in hosts %}
+  <div class='host'>
+    <a href="{{ url_for('host', host_id=host) }}">{{ host }}</a>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

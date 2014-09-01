@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class='host new'>
+  <h2>{% if host.id %}modify host{% else %}add host{% endif %}</h2>
+
+  {% if error %}<p class="alert error"><strong>Error:</strong> {{ error }}{% endif %}
+
+  <form action="{{ url_for('host_new') }}" method="post">
+    <table>
+      <tr>
+        <td><label for="name">name:</label></td>
+        <td><input type="text" name="name" value="{{ host.name }}"/></td>
+      </tr>
+
+      <tr>
+        <td><label for="host">host:</label></td>
+        <td><input type="text" name="host" value="{{ host.host }}"/></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td><button type="submit">Save</button></td>
+      </tr>
+    </table>
+  </form>
+</div>
+{% endblock %}
