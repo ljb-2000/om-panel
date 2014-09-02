@@ -2,10 +2,12 @@
 
 import json
 import redis
+import os
 
-from flask import Flask, request, session, url_for, redirect, \
+from flask import Flask, Blueprint, request, session, url_for, redirect, \
      render_template, abort, g, flash
 
+import chartkick
 
 app = Flask(__name__)
 app.config.update(dict(
@@ -16,6 +18,27 @@ app.config.update(dict(
 ))
 
 redis = redis.StrictRedis(host='localhost', port='6379', db=0)
+
+# Charts
+
+ck = Blueprint('ck_page', __name__, static_folder=chartkick.js(), static_url_path='/static')
+app.register_blueprint(ck, url_prefix='/ck')
+app.jinja_env.add_extension("chartkick.ext.charts")
+
+
+# Config
+
+BASE_CONFIG = {'hosts': {}}
+
+def write_config(path, config=BASE_CONFIG):
+    with open(path, 'w') as f: json.dump(config, f)
+    return config
+
+def load_config(path):
+    config = json.load(open(path)) if os.path.exists(path) else write_config(path)
+    for name, host_config in config.get('hosts', {}).iteritems():
+        host = Host.from_config(name, host_config)
+        host.save() # FIXME this could have side effects..
 
 
 @app.route('/')
@@ -51,10 +74,13 @@ def sessions(app):
         session['logged_in'] = False
         return redirect(url_for('login'))
 
+def clean_timeseries_array(ar):
+    a, b = ar[1:-1].split(',')
+    return [int(a), float(b)]
 
 class Host(object):
 
-    def __init__(self, name, host, ssh='{}'):
+    def __init__(self, name, host):
         assert len(name) > 0, 'Name must not be blank'
         assert len(host) > 0, 'Host must not be blank'
         self.name = name
@@ -67,6 +93,23 @@ class Host(object):
             })
             pipeline.sadd('hosts', self.name)
             pipeline.execute()
+
+    def disks_usage(self):
+        disks = {}
+        disks_for_host = redis.keys('%s:disk_usage:*' % self.host)
+        for disk in disks_for_host:
+            disk_name = disk.split(':')[-2]
+            usage = map(clean_timeseries_array, redis.lrange(disk, -200, -1))
+            disks[disk_name] = usage
+        return disks
+
+    @property
+    def memory_usage(self):
+        base_key = '%s:memory_usage:system:' % self.host
+        free = redis.lrange(base_key + 'free', -200, -1)
+        used = redis.lrange(base_key + 'free', -200, -1)
+        usage = redis.lrange(base_key + 'usage', -200, -1)
+        return map(clean_timeseries_array, usage)
 
     @staticmethod
     def destroy(host_id):
@@ -88,6 +131,10 @@ class Host(object):
     def all():
         return redis.smembers('hosts')
 
+    @staticmethod
+    def from_config(name, config):
+        # TODO ssh
+        return Host(name, config['host'])
 
 def hosts(app):
     @app.route('/hosts/new', methods=['GET', 'POST'])

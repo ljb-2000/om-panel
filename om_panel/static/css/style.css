@@ -70,7 +70,7 @@ a:hover {
   -moz-transition: all .25s;
   -o-transition: all .25s;
   transition: all .25s;
-  border-bottom: 0px solid #666699;
+  border-bottom: 0px solid green;
 }
 
 .header .navbar li.selected a, .header .navbar li:hover a {

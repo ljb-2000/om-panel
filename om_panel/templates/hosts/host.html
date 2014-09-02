@@ -10,5 +10,19 @@
   </tr>
 </table>
 
+
+<h4>Disk Usage</h4>
+
+{% for disk, usage in host.disks_usage().iteritems() %}
+  <h5>{{ disk }}</h5>
+  {% line_chart usage %}
+{% endfor %}
+
+<h4>Memory Usage</h4>
+
+{% line_chart host.memory_usage %}
+
+
+
 <a href="{{ url_for('destroy_host', host_id=host.name) }}">delete</a>
 {% endblock %}
