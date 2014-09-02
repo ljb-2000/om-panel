@@ -29,16 +29,18 @@ app.jinja_env.add_extension("chartkick.ext.charts")
 
 BASE_CONFIG = {'hosts': {}}
 
+
 def write_config(path, config=BASE_CONFIG):
     with open(path, 'w') as f: json.dump(config, f)
     return config
 
-def load_config(path):
+def load_config(path, refresh_redis=True):
     config = json.load(open(path)) if os.path.exists(path) else write_config(path)
     for name, host_config in config.get('hosts', {}).iteritems():
         host = Host.from_config(name, host_config)
-        host.save() # FIXME this could have side effects..
-
+        if refresh_redis:
+            host.save() # FIXME this could have side effects..
+    return config
 
 @app.route('/')
 def index():
@@ -94,6 +96,7 @@ class Host(object):
             })
             pipeline.sadd('hosts', self.name)
             pipeline.execute()
+        self._update_ext_config()
 
     def disks_usage(self):
         disks = {}
@@ -118,7 +121,7 @@ class Host(object):
             name = 'host:' + host_id
             pipeline.delete(name)
             pipeline.srem('hosts', host_id)
-            print pipeline.execute()
+            pipeline.execute()
 
     @staticmethod
     def find(host_id):
@@ -137,6 +140,17 @@ class Host(object):
         # TODO ssh
         return Host(name, config['host'])
 
+    def _update_ext_config(self):
+        with app.app_context():
+            if not hasattr(app, 'config_file'): return
+            config = load_config(app.config_file, refresh_redis=False)
+
+            if self.name not in config['hosts']:
+                config['hosts'][self.name] = {'host': self.host}
+
+            write_config(app.config_file, config)
+
+
 def hosts(app):
     @app.route('/hosts/new', methods=['GET', 'POST'])
     def host_new():
@@ -151,6 +165,9 @@ def hosts(app):
                 host_object.save()
                 return redirect(url_for('host', host_id=host_object.name))
             except Exception as e:
+                print e
+                import traceback
+                traceback.print_exc()
                 error = e
 
         return render_template('hosts/new.html', host=host, error=error)
