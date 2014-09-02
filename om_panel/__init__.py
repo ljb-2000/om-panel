@@ -16,7 +16,6 @@ app.config.update(dict(
     USERNAME='admin',
     PASSWORD='admin'
 ))
-
 redis = redis.StrictRedis(host='localhost', port='6379', db=0)
 
 # Charts
@@ -74,9 +73,11 @@ def sessions(app):
         session['logged_in'] = False
         return redirect(url_for('login'))
 
+
 def clean_timeseries_array(ar):
     a, b = ar[1:-1].split(',')
     return [int(a), float(b)]
+
 
 class Host(object):
 
@@ -145,6 +146,7 @@ def hosts(app):
         if request.method == 'POST':
             try:
                 host['name'], host['host'] = request.form['name'], request.form['host']
+                assert host['name'] not in Host.all(), 'Name already in use'
                 host_object = Host(**host)
                 host_object.save()
                 return redirect(url_for('host', host_id=host_object.name))
