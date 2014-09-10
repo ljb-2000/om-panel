@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys
+
+
+__help__ = '''Usage:
+
+    Run web app:
+
+      $ om_panel -c <config.json>
+
+    config.json is a configuration file used both by om_panel and om itself.
+    It will be generated if it doesn't exist yet.
+'''
+
+def usage():
+    print __help__
+
+
+if __name__ == '__main__':
+    from om_panel import app, load_config, g
+
+    if len(sys.argv) == 3 and sys.argv[1] == '-c':
+        load_config(sys.argv[2])
+        app.config_file = sys.argv[2]
+        app.run()
+    else:
+        usage()
+
